@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -99,7 +100,9 @@ let selectedColor = null;
 let codeClaimedThisSession = false;
 let lossStreak = 0;
 
-function updateBalanceDisplay(){ document.getElementById('balance').innerText = balance.toFixed(0)+' tk'; }
+function updateBalanceDisplay(){ 
+  document.getElementById('balance').innerText = balance.toFixed(0)+' tk'; 
+}
 updateBalanceDisplay();
 renderHistory();
 
@@ -107,12 +110,27 @@ function claimCode(){
   const code=document.getElementById('claimCode').value;
   const msg=document.getElementById('claimMsg');
   if(codeClaimedThisSession){ msg.className='message error'; msg.innerText='❌ Already claimed!'; return; }
-  if(code==='10000'){ balance+=100; codeClaimedThisSession=true; msg.className='message success'; msg.innerText='✅ 100 tk added!'; localStorage.setItem('balance',balance.toFixed(2)); updateBalanceDisplay(); }
+  if(code==='10000'){ 
+    balance+=100; 
+    codeClaimedThisSession=true; 
+    msg.className='message success'; 
+    msg.innerText='✅ 100 tk added!'; 
+    localStorage.setItem('balance', balance.toFixed(2)); 
+    updateBalanceDisplay(); 
+  }
   else{ msg.className='message error'; msg.innerText='❌ Wrong Code!'; }
 }
 
-function chooseColor(color){ selectedColor=color; document.getElementById('betInputArea').classList.remove('hidden'); document.getElementById('betResult').innerText=''; document.getElementById('countdown').innerText=''; }
-function closeBetInput(){ document.getElementById('betInputArea').classList.add('hidden'); selectedColor=null; }
+function chooseColor(color){ 
+  selectedColor=color; 
+  document.getElementById('betInputArea').classList.remove('hidden'); 
+  document.getElementById('betResult').innerText=''; 
+  document.getElementById('countdown').innerText=''; 
+}
+function closeBetInput(){ 
+  document.getElementById('betInputArea').classList.add('hidden'); 
+  selectedColor=null; 
+}
 
 function checkWin(){
   let chance=0.25;
@@ -125,7 +143,11 @@ function checkWin(){
 function placeBet(){
   const amount=parseFloat(document.getElementById('betAmount').value);
   const msg=document.getElementById('betResult');
-  if(isNaN(amount)||amount<=0||amount>balance){ msg.className='message error'; msg.innerText='❌ Invalid bet!'; return; }
+  if(isNaN(amount)||amount<=0||amount>balance){ 
+    msg.className='message error'; 
+    msg.innerText='❌ Invalid bet!'; 
+    return; 
+  }
 
   balance-=amount;
   updateBalanceDisplay();
@@ -147,7 +169,7 @@ function placeBet(){
 
       if(win){
         netTotal = amount*2; // Bet + Win
-        balance += netTotal; // Add both to balance
+        balance += netTotal; 
         resultText='WIN';
         msg.className='message success';
         msg.innerText=`🎉 WIN! ${netTotal.toFixed(0)} tk`;
@@ -176,14 +198,26 @@ function renderHistory(){
   const tbody=document.getElementById('historyBody');
   tbody.innerHTML='';
   gameHistory.forEach(e=>{
+    const net = parseFloat(e.netTotal);
+    const signNet = net > 0 ? `+${net}` : net;
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td>${e.color}</td><td>${e.bet} tk</td><td>${e.result}</td><td>${e.netTotal} tk</td>`;
+    tr.innerHTML=`<td>${e.color}</td><td>${e.bet} tk</td><td>${e.result}</td><td>${signNet} tk</td>`;
     tbody.appendChild(tr);
   });
 }
 
-function openWithdraw(){ document.querySelector('.claim-section').classList.add('hidden'); document.querySelector('.bet-section').classList.add('hidden'); document.querySelector('.btn-withdraw').classList.add('hidden'); document.getElementById('withdrawSection').classList.remove('hidden'); }
-function closeWithdraw(){ document.querySelector('.claim-section').classList.remove('hidden'); document.querySelector('.bet-section').classList.remove('hidden'); document.querySelector('.btn-withdraw').classList.remove('hidden'); document.getElementById('withdrawSection').classList.add('hidden'); }
+function openWithdraw(){ 
+  document.querySelector('.claim-section').classList.add('hidden'); 
+  document.querySelector('.bet-section').classList.add('hidden'); 
+  document.querySelector('.btn-withdraw').classList.add('hidden'); 
+  document.getElementById('withdrawSection').classList.remove('hidden'); 
+}
+function closeWithdraw(){ 
+  document.querySelector('.claim-section').classList.remove('hidden'); 
+  document.querySelector('.bet-section').classList.remove('hidden'); 
+  document.querySelector('.btn-withdraw').classList.remove('hidden'); 
+  document.getElementById('withdrawSection').classList.add('hidden'); 
+}
 function submitWithdraw(){
   const method=document.getElementById('method').value;
   const amount=parseFloat(document.getElementById('withdrawAmount').value);
@@ -206,3 +240,4 @@ document.getElementById('backWithdrawBtn').addEventListener('click',closeWithdra
 </script>
 </body>
 </html>
+```
