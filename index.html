@@ -148,25 +148,28 @@
 <script>
 let balance = parseInt(localStorage.getItem('balance')) || 0;
 let selectedColor = null;
+let codeClaimedThisSession = false; // শুধুমাত্র বর্তমান সেশনে
+
 document.getElementById('balance').innerText = balance + ' tk';
 
 // Claim Code
 function claimCode() {
   const code = document.getElementById('claimCode').value;
   const msg = document.getElementById('claimMsg');
-  const claimed = localStorage.getItem('codeClaimed'); // একবার ব্যবহার হয়েছে কিনা
-  if(claimed){
+
+  if(codeClaimedThisSession){
     msg.className = 'message error';
-    msg.innerText = '❌ You have already claimed!';
+    msg.innerText = '❌ You have already claimed in this session!';
     return;
   }
-  if(code === '199234'){
+
+  if(code === '1992'){
     balance += 100;
     localStorage.setItem('balance', balance);
-    localStorage.setItem('codeClaimed', 'true'); // চিহ্নিত
     document.getElementById('balance').innerText = balance + ' tk';
     msg.className = 'message success';
     msg.innerText = '✅ 100 tk added successfully!';
+    codeClaimedThisSession = true; // একবার ক্লেইম হয়ে গেছে
   } else {
     msg.className = 'message error';
     msg.innerText = '❌ Wrong Code!';
