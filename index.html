@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>2X WIN - Fixed Double Win</title>
+<title>2X WIN - Corrected Balance</title>
 <style>
 body { margin:0; font-family:'Poppins',sans-serif; background:radial-gradient(circle at top,#0f0c29,#302b63,#24243e); color:#fff; display:flex; flex-direction:column; align-items:center; min-height:100vh; padding-bottom:40px;}
 h1{margin:20px 0; font-size:2.2rem; letter-spacing:2px; color:#ffec00; text-shadow:0 0 10px rgba(255,236,0,0.8);}
@@ -93,7 +93,6 @@ th,td{padding:5px; text-align:center; border-bottom:1px solid #fff;}
 </div>
 
 <script>
-// Initialize balance and history
 let balance = parseFloat(localStorage.getItem('balance')) || 0;
 let gameHistory = JSON.parse(localStorage.getItem('gameHistory')) || [];
 let selectedColor = null;
@@ -104,7 +103,6 @@ function updateBalanceDisplay(){ document.getElementById('balance').innerText = 
 updateBalanceDisplay();
 renderHistory();
 
-// Claim code
 function claimCode(){
   const code=document.getElementById('claimCode').value;
   const msg=document.getElementById('claimMsg');
@@ -113,11 +111,9 @@ function claimCode(){
   else{ msg.className='message error'; msg.innerText='❌ Wrong Code!'; }
 }
 
-// Bet
 function chooseColor(color){ selectedColor=color; document.getElementById('betInputArea').classList.remove('hidden'); document.getElementById('betResult').innerText=''; document.getElementById('countdown').innerText=''; }
 function closeBetInput(){ document.getElementById('betInputArea').classList.add('hidden'); selectedColor=null; }
 
-// LossStreak aware win check
 function checkWin(){
   let chance=0.25;
   if(lossStreak>=3) chance=0.6;
@@ -147,17 +143,16 @@ function placeBet(){
     if(countdown<=0){
       clearInterval(interval);
       const win=checkWin();
-      let netTotal=0, resultText='', winAmount=0;
+      let netTotal=0, resultText='';
 
       if(win){
-        winAmount = amount; // Bet এর সমান
-        netTotal = amount + winAmount; // Double
-        balance += winAmount;
+        netTotal = amount*2; // Bet + Win
+        balance += netTotal; // Add both to balance
         resultText='WIN';
         msg.className='message success';
         msg.innerText=`🎉 WIN! ${netTotal.toFixed(0)} tk`;
       } else{
-        netTotal=-amount;
+        netTotal = -amount;
         resultText='LOSS';
         msg.className='message error';
         msg.innerText='💔 LOSS!';
@@ -168,7 +163,6 @@ function placeBet(){
       document.getElementById('greenBtn').disabled=false;
       document.getElementById('redBtn').disabled=false;
 
-      // Add to history
       const entry={color:selectedColor, bet:amount, result:resultText, netTotal:netTotal.toFixed(0)};
       gameHistory.push(entry);
       localStorage.setItem('gameHistory',JSON.stringify(gameHistory));
@@ -188,7 +182,6 @@ function renderHistory(){
   });
 }
 
-// Withdraw
 function openWithdraw(){ document.querySelector('.claim-section').classList.add('hidden'); document.querySelector('.bet-section').classList.add('hidden'); document.querySelector('.btn-withdraw').classList.add('hidden'); document.getElementById('withdrawSection').classList.remove('hidden'); }
 function closeWithdraw(){ document.querySelector('.claim-section').classList.remove('hidden'); document.querySelector('.bet-section').classList.remove('hidden'); document.querySelector('.btn-withdraw').classList.remove('hidden'); document.getElementById('withdrawSection').classList.add('hidden'); }
 function submitWithdraw(){
