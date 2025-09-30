@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2X WIN - Pro Casino Style</title>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: radial-gradient(circle at top, #0f0c29, #302b63, #24243e);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+  h1 {
+    margin: 20px 0;
+    font-size: 2.2rem;
+    letter-spacing: 2px;
+    color: #ffec00;
+    text-shadow: 0 0 10px rgba(255,236,0,0.8);
+  }
+  .balance-circle {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff416c, #ff4b2b);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    font-weight: bold;
+    margin-bottom: 25px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { box-shadow: 0 0 15px #ff4b2b; }
+    50% { box-shadow: 0 0 35px #ffec00; }
+  }
+  .section {
+    width: 90%;
+    max-width: 400px;
+    background: rgba(255,255,255,0.05);
+    padding: 20px;
+    border-radius: 12px;
+    margin: 15px 0;
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+  input, select, button {
+    margin: 10px 0;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+  }
+  input, select {
+    width: 90%;
+    max-width: 250px;
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+  }
+  button {
+    cursor: pointer;
+    font-weight: bold;
+    transition: transform 0.2s, box-shadow 0.3s;
+  }
+  button:hover { transform: scale(1.05); box-shadow: 0 0 15px #ffec00; }
+  .btn-green { background: linear-gradient(45deg, #00c853, #64dd17); color: #fff; width: 120px; }
+  .btn-red { background: linear-gradient(45deg, #d50000, #ff1744); color: #fff; width: 120px; }
+  .btn-claim { background: linear-gradient(45deg, #ffc107, #ffeb3b); color: #000; width: 150px; }
+  .btn-withdraw { background: linear-gradient(45deg, #1e88e5, #42a5f5); color: #fff; width: 150px; margin-top: 15px; }
+  .message { margin-top: 5px; font-size: 0.9rem; animation: fadeIn 0.5s; text-align: center; }
+  .message.success { color: #00ffcc; font-size: 1.1rem; animation: bounce 0.7s; }
+  .message.error { color: #ff1744; font-size: 1.1rem; animation: shake 0.7s; }
+  @keyframes fadeIn { from {opacity:0; transform: translateY(5px);} to {opacity:1; transform: translateY(0);} }
+  @keyframes bounce { 0%,100% { transform: translateY(0);} 50% { transform: translateY(-10px); }}
+  @keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-5px);} 75%{transform:translateX(5px);} }
+  .hidden { display: none; }
+  .countdown { font-size: 1.5rem; margin-top: 20px; animation: blink 1s infinite; }
+  @keyframes blink { 50% {opacity:0.6;} }
+  .close-btn { position: absolute; top: 10px; right: 10px; background: #ff1744; color: #fff; width: 30px; height: 30px; border-radius: 50%; line-height: 30px; text-align: center; font-weight: bold; cursor: pointer; }
+  .withdraw-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  @media(max-width: 500px){
+    h1 { font-size: 1.8rem; }
+    .balance-circle { width: 120px; height: 120px; font-size: 1.4rem; }
+    button, input, select { font-size: 0.95rem; }
+  }
+</style>
+</head>
+<body>
+<h1>2X WIN</h1>
+<div class="balance-circle" id="balance">0 tk</div>
+
+<!-- Claim Section -->
+<div class="section claim-section">
+  <input type="text" id="claimCode" placeholder="Enter claim code">
+  <button class="btn-claim" onclick="claimCode()">Claim</button>
+  <div id="claimMsg" class="message"></div>
+</div>
+
+<!-- Bet Section -->
+<div class="section bet-section">
+  <div>
+    <button class="btn-green" id="greenBtn">Green</button>
+    <button class="btn-red" id="redBtn">Red</button>
+  </div>
+  <div id="betInputArea" class="hidden">
+    <div class="close-btn" onclick="closeBetInput()">×</div>
+    <input type="number" id="betAmount" placeholder="Enter bet amount">
+    <button id="placeBetBtn">Place Bet</button>
+  </div>
+  <div class="countdown" id="countdown"></div>
+  <div class="message" id="betResult"></div>
+</div>
+
+<!-- Withdraw Button -->
+<button class="btn-withdraw" onclick="openWithdraw()">Withdraw</button>
+
+<!-- Withdraw Section -->
+<div class="section withdraw-section hidden" id="withdrawSection">
+  <select id="method">
+    <option value="">Select Method</option>
+    <option value="Bkash">Bkash</option>
+    <option value="Nagad">Nagad</option>
+  </select>
+  <input type="number" id="withdrawAmount" placeholder="Enter amount">
+  <input type="text" id="withdrawNumber" placeholder="Enter account number">
+  <div class="withdraw-buttons">
+    <button id="submitWithdrawBtn">Submit</button>
+    <button id="backWithdrawBtn">Back</button>
+  </div>
+  <div class="message" id="withdrawMsg"></div>
+</div>
+
+<script>
+let balance = parseInt(localStorage.getItem('balance')) || 0;
+let selectedColor = null;
+document.getElementById('balance').innerText = balance + ' tk';
+
+// Claim Code
+function claimCode() {
+  const code = document.getElementById('claimCode').value;
+  const msg = document.getElementById('claimMsg');
+  const claimed = localStorage.getItem('codeClaimed'); // একবার ব্যবহার হয়েছে কিনা
+  if(claimed){
+    msg.className = 'message error';
+    msg.innerText = '❌ You have already claimed!';
+    return;
+  }
+  if(code === '1992'){
+    balance += 100;
+    localStorage.setItem('balance', balance);
+    localStorage.setItem('codeClaimed', 'true'); // চিহ্নিত
+    document.getElementById('balance').innerText = balance + ' tk';
+    msg.className = 'message success';
+    msg.innerText = '✅ 100 tk added successfully!';
+  } else {
+    msg.className = 'message error';
+    msg.innerText = '❌ Wrong Code!';
+  }
+}
+
+// Bet System
+function chooseColor(color){
+  selectedColor = color;
+  document.getElementById('betInputArea').classList.remove('hidden');
+  document.getElementById('betResult').innerText = '';
+  document.getElementById('countdown').innerText = '';
+}
+
+function closeBetInput(){
+  document.getElementById('betInputArea').classList.add('hidden');
+  selectedColor = null;
+}
+
+function placeBet(){
+  const amount = parseInt(document.getElementById('betAmount').value);
+  const msg = document.getElementById('betResult');
+  if(isNaN(amount) || amount <= 0 || amount > balance){
+    msg.className = 'message error';
+    msg.innerText = '❌ Invalid bet amount!';
+    return;
+  }
+  balance -= amount;
+  localStorage.setItem('balance', balance);
+  document.getElementById('balance').innerText = balance + ' tk';
+  document.getElementById('betInputArea').classList.add('hidden');
+
+  let time = 10;
+  const countdownEl = document.getElementById('countdown');
+  countdownEl.innerText = '⏳ ' + time + 's';
+  const interval = setInterval(() => {
+    time--;
+    countdownEl.innerText = '⏳ ' + time + 's';
+    if(time <= 0){
+      clearInterval(interval);
+      const win = Math.random() < 0.5;
+      if(win){
+        balance += amount * 2;
+        msg.className = 'message success';
+        msg.innerText = '🎉 WIN! You got ' + (amount * 2) + ' tk';
+      } else {
+        msg.className = 'message error';
+        msg.innerText = '💔 LOSS!';
+      }
+      localStorage.setItem('balance', balance);
+      document.getElementById('balance').innerText = balance + ' tk';
+      countdownEl.innerText = '';
+    }
+  }, 1000);
+}
+
+// Withdraw Section
+function openWithdraw(){
+  document.querySelector('.claim-section').classList.add('hidden');
+  document.querySelector('.bet-section').classList.add('hidden');
+  document.querySelector('.btn-withdraw').classList.add('hidden');
+  document.getElementById('withdrawSection').classList.remove('hidden');
+}
+
+function closeWithdraw(){
+  document.querySelector('.claim-section').classList.remove('hidden');
+  document.querySelector('.bet-section').classList.remove('hidden');
+  document.querySelector('.btn-withdraw').classList.remove('hidden');
+  document.getElementById('withdrawSection').classList.add('hidden');
+}
+
+async function submitWithdraw(){
+  const method = document.getElementById('method').value;
+  const amount = parseInt(document.getElementById('withdrawAmount').value);
+  const number = document.getElementById('withdrawNumber').value;
+  const msg = document.getElementById('withdrawMsg');
+  if(!method || !amount || !number){
+    msg.className = 'message error';
+    msg.innerText = '❌ All fields are required';
+    return;
+  }
+  if(amount < 500){
+    msg.className = 'message error';
+    msg.innerText = '⚠ Minimum withdraw is 500 tk';
+    return;
+  }
+  if(amount > balance){
+    msg.className = 'message error';
+    msg.innerText = '❌ Not enough balance';
+    return;
+  }
+  balance -= amount;
+  localStorage.setItem('balance', balance);
+  document.getElementById('balance').innerText = balance + ' tk';
+  msg.className = 'message success';
+  msg.innerText = '✅ Withdraw request sent successfully!';
+
+  try{
+    await fetch(`https://api.telegram.org/botYOUR_BOT_TOKEN/sendMessage`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({chat_id: 'YOUR_CHAT_ID', text: `Withdraw Request:\nMethod: ${method}\nAmount: ${amount}\nNumber: ${number}`})
+    });
+  } catch(e){
+    console.log('Telegram Error', e);
+  }
+}
+
+// Event Listeners
+document.getElementById('greenBtn').addEventListener('click', () => chooseColor('green'));
+document.getElementById('redBtn').addEventListener('click', () => chooseColor('red'));
+document.getElementById('placeBetBtn').addEventListener('click', placeBet);
+document.getElementById('submitWithdrawBtn').addEventListener('click', submitWithdraw);
+document.getElementById('backWithdrawBtn').addEventListener('click', closeWithdraw);
+</script>
+</body>
+</html>
