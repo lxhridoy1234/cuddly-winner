@@ -1,519 +1,208 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>2X WIN — Pro</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2X WIN - Corrected Balance</title>
 <style>
-  :root{
-    --bg-1:#0f0c29;
-    --bg-2:#302b63;
-    --card:#0f1724;
-    --accent:#ffcc00;
-    --muted:rgba(255,255,255,0.08);
-    --glass: rgba(255,255,255,0.04);
-    --success:#00d39a;
-    --danger:#ff6b6b;
-    --glass-border: rgba(255,255,255,0.06);
-    --text:#e9eef8;
-    --glass-blur:8px;
-    --radius:14px;
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    margin:0;
-    font-family:Inter, Poppins, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    background: radial-gradient(circle at 10% 10%, rgba(78,69,180,0.14) 0%, transparent 25%),
-                linear-gradient(180deg,var(--bg-1),var(--bg-2));
-    color:var(--text);
-    -webkit-font-smoothing:antialiased;
-    display:flex;
-    align-items:flex-start;
-    justify-content:center;
-    padding:36px 18px;
-  }
-
-  /* Container */
-  .wrap{
-    width:100%;
-    max-width:1080px;
-    display:grid;
-    grid-template-columns: 360px 1fr;
-    gap:22px;
-    align-items:start;
-  }
-
-  /* Left column card (controls) */
-  .card{
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    border:1px solid var(--glass-border);
-    backdrop-filter: blur(var(--glass-blur));
-    padding:18px;
-    border-radius:var(--radius);
-    box-shadow: 0 6px 30px rgba(2,6,23,0.6);
-  }
-
-  header.app-head{
-    grid-column: 1 / -1;
-    display:flex;
-    align-items:center;
-    gap:16px;
-    margin-bottom:6px;
-  }
-  .logo{
-    width:64px; height:64px; border-radius:12px;
-    display:flex; align-items:center; justify-content:center;
-    background: linear-gradient(135deg,#ff416c,#ff4b2b);
-    color:#fff; font-weight:700; font-size:18px;
-    box-shadow:0 8px 30px rgba(255,75,43,0.12), inset 0 -8px 40px rgba(0,0,0,0.15);
-  }
-  .app-title{
-    display:flex; flex-direction:column;
-  }
-  .app-title h1{margin:0; font-size:1.25rem; letter-spacing:0.6px; color:var(--accent)}
-  .app-title p{margin:0; margin-top:4px; color:rgba(233,238,248,0.75); font-size:0.9rem}
-
-  /* Balance bubble */
-  .balance{
-    display:flex; flex-direction:column; align-items:center; gap:8px;
-    text-align:center;
-  }
-  .balance .bubble{
-    width:140px; height:140px; border-radius:50%;
-    background: linear-gradient(135deg,#1f2937,#111827);
-    display:flex; align-items:center; justify-content:center;
-    flex-direction:column;
-    box-shadow: 0 10px 30px rgba(2,6,23,0.6), 0 0 30px rgba(255,204,0,0.06);
-    border: 1px solid rgba(255,255,255,0.03);
-    transition:transform .25s ease;
-  }
-  .balance .bubble strong{font-size:1.6rem; color:var(--accent)}
-  .balance .bubble small{display:block; color:rgba(255,255,255,0.6); font-size:0.8rem}
-
-  .controls{margin-top:12px; display:flex; flex-direction:column; gap:12px}
-
-  input[type="text"], input[type="number"], select{
-    width:100%; padding:12px 14px; border-radius:10px; border:1px solid var(--glass-border);
-    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    color:var(--text);
-    outline:none; font-size:0.96rem;
-  }
-
-  .row{display:flex; gap:10px}
-  .btn{
-    padding:10px 14px; border-radius:10px; border:none; cursor:pointer; font-weight:600;
-    transition:transform .12s ease, box-shadow .12s ease;
-    box-shadow: 0 6px 18px rgba(2,6,23,0.5);
-  }
-  .btn:active{transform:translateY(1px)}
-  .btn-claim{background:linear-gradient(90deg,#ffc107,#ffeb3b); color:#000; width:100%}
-  .btn-green{background:linear-gradient(90deg,#00c853,#64dd17); color:#042014; width:100%}
-  .btn-red{background:linear-gradient(90deg,#ff4b4b,#ff1744); color:#fff; width:100%}
-  .btn-withdraw{background:linear-gradient(90deg,#1e88e5,#42a5f5); color:#fff; width:100%}
-
-  /* Bet card inside left column */
-  .bet-actions{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:6px}
-  .small-note{font-size:0.82rem; color:rgba(255,255,255,0.6)}
-
-  /* Right column (main area) */
-  .main{
-    display:flex; flex-direction:column; gap:16px;
-  }
-
-  .panel{
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    border:1px solid var(--glass-border);
-    padding:16px;
-    border-radius:var(--radius);
-    box-shadow: 0 8px 40px rgba(2,6,23,0.55);
-  }
-
-  .game-top{
-    display:flex; justify-content:space-between; align-items:center; gap:12px;
-  }
-  .game-top .status{
-    display:flex; gap:10px; align-items:center;
-  }
-  .countdown{
-    font-weight:700; font-size:1.1rem; color:var(--accent);
-    padding:8px 12px; border-radius:10px; background:var(--muted);
-  }
-
-  /* Result display */
-  .result-box{
-    margin-top:12px; display:flex; gap:12px; align-items:center;
-  }
-  .result-msg{font-weight:700; font-size:1.05rem}
-  .badge{
-    padding:6px 10px; border-radius:999px; font-weight:700; font-size:0.9rem;
-    display:inline-flex; align-items:center; gap:8px;
-  }
-  .badge.win{background:linear-gradient(90deg, rgba(0,211,154,0.12), rgba(0,211,154,0.06)); color:var(--success); border:1px solid rgba(0,211,154,0.08)}
-  .badge.loss{background:linear-gradient(90deg, rgba(255,107,107,0.08), rgba(255,107,107,0.04)); color:var(--danger); border:1px solid rgba(255,107,107,0.06)}
-
-  /* History table */
-  .history-table{width:100%; border-collapse:collapse; margin-top:8px}
-  .history-table thead th{font-size:0.85rem; text-align:left; color:rgba(255,255,255,0.7); padding:10px 8px; border-bottom:1px solid var(--glass-border)}
-  .history-table tbody td{padding:10px 8px; border-bottom:1px dashed rgba(255,255,255,0.03); font-size:0.95rem}
-  .history-row{display:flex; justify-content:space-between; align-items:center}
-  .col-left{display:flex; gap:12px; align-items:center}
-  .dot{width:12px; height:12px; border-radius:50%}
-  .dot.green{background:linear-gradient(90deg,#00d39a,#00a86b)}
-  .dot.red{background:linear-gradient(90deg,#ff6b6b,#ff2d2d)}
-  .muted{color:rgba(255,255,255,0.65); font-size:0.9rem}
-
-  .net.plus{color:var(--success); font-weight:800}
-  .net.minus{color:var(--danger); font-weight:800}
-
-  /* Withdraw section */
-  .withdraw-list{margin-top:10px; max-height:130px; overflow:auto; display:flex; flex-direction:column; gap:8px}
-  .withdraw-item{padding:8px; border-radius:10px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.02); font-size:0.9rem; display:flex; justify-content:space-between; align-items:center}
-
-  /* Responsive */
-  @media(max-width:980px){
-    .wrap{grid-template-columns: 1fr; max-width:720px}
-    header.app-head{grid-column: auto}
-  }
+body { margin:0; font-family:'Poppins',sans-serif; background:radial-gradient(circle at top,#0f0c29,#302b63,#24243e); color:#fff; display:flex; flex-direction:column; align-items:center; min-height:100vh; padding-bottom:40px;}
+h1{margin:20px 0; font-size:2.2rem; letter-spacing:2px; color:#ffec00; text-shadow:0 0 10px rgba(255,236,0,0.8);}
+h2{margin-top:30px; color:#ffec00;}
+.balance-circle{width:140px; height:140px; border-radius:50%; background:linear-gradient(135deg,#ff416c,#ff4b2b); display:flex; align-items:center; justify-content:center; font-size:1.6rem; font-weight:bold; margin-bottom:25px; box-shadow:0 0 20px rgba(0,0,0,0.5); animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 15px #ff4b2b;} 50%{box-shadow:0 0 35px #ffec00;}}
+.section{width:90%; max-width:400px; background:rgba(255,255,255,0.05); padding:20px; border-radius:12px; margin:15px 0; box-shadow:0 0 15px rgba(0,0,0,0.3); display:flex; flex-direction:column; align-items:center; position:relative;}
+input,select,button{margin:10px 0; padding:12px; border-radius:8px; border:none; outline:none; font-size:1rem;}
+input,select{width:90%; max-width:250px; background:rgba(255,255,255,0.1); color:#fff;}
+button{cursor:pointer; font-weight:bold; transition:transform 0.2s, box-shadow 0.3s;}
+button:hover{transform:scale(1.05); box-shadow:0 0 15px #ffec00;}
+.btn-green{background:linear-gradient(45deg,#00c853,#64dd17); color:#fff; width:120px;}
+.btn-red{background:linear-gradient(45deg,#d50000,#ff1744); color:#fff; width:120px;}
+.btn-claim{background:linear-gradient(45deg,#ffc107,#ffeb3b); color:#000; width:150px;}
+.btn-withdraw{background:linear-gradient(45deg,#1e88e5,#42a5f5); color:#fff; width:150px; margin-top:15px;}
+.message{margin-top:5px; font-size:0.9rem; animation:fadeIn 0.5s; text-align:center;}
+.message.success{color:#00ffcc; font-size:1.1rem; animation:bounce 0.7s;}
+.message.error{color:#ff1744; font-size:1.1rem; animation:shake 0.7s;}
+@keyframes fadeIn{from{opacity:0; transform:translateY(5px);} to{opacity:1; transform:translateY(0);}}
+@keyframes bounce{0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);}}
+@keyframes shake{0%,100%{transform:translateX(0);} 25%{transform:translateX(-5px);} 75%{transform:translateX(5px);}}
+.hidden{display:none;}
+.countdown{font-size:1.5rem; margin-top:20px; animation:blink 1s infinite;}
+@keyframes blink{50%{opacity:0.6;}}
+.close-btn{position:absolute; top:10px; right:10px; background:#ff1744; color:#fff; width:30px; height:30px; border-radius:50%; line-height:30px; text-align:center; font-weight:bold; cursor:pointer;}
+.withdraw-buttons{display:flex; gap:10px; margin-top:10px;}
+table{width:100%; border-collapse:collapse;}
+th,td{padding:5px; text-align:center; border-bottom:1px solid #fff;}
+#historySection{max-height:200px; overflow-y:auto; width:90%; max-width:500px;}
+@media(max-width:500px){h1{font-size:1.8rem;} .balance-circle{width:120px; height:120px; font-size:1.4rem;} button,input,select{font-size:0.95rem;}}
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <header class="app-head">
-      <div class="logo">2X</div>
-      <div class="app-title">
-        <h1>2X WIN — Pro</h1>
-        <p>Fast. Clean. Professional betting demo (local demo only).</p>
-      </div>
-    </header>
+<h1>2X WIN</h1>
+<div class="balance-circle" id="balance">0 tk</div>
 
-    <!-- LEFT CONTROLS -->
-    <aside class="card">
-      <div class="balance">
-        <div class="bubble" id="balanceBubble">
-          <strong id="balance">0 tk</strong>
-          <small>Available Balance</small>
-        </div>
-        <div class="small-note">Loss streak: <span id="lossStreak">0</span></div>
-      </div>
+<div class="section claim-section">
+  <input type="text" id="claimCode" placeholder="Enter claim code">
+  <button class="btn-claim" onclick="claimCode()">Claim</button>
+  <div id="claimMsg" class="message"></div>
+</div>
 
-      <div class="controls">
-        <div>
-          <label class="small-note">Claim Code</label>
-          <input id="claimCode" type="text" placeholder="Enter code (e.g. 10000)">
-          <button class="btn btn-claim" id="claimBtn">Claim</button>
-          <div id="claimMsg" class="small-note" style="margin-top:6px"></div>
-        </div>
-
-        <div>
-          <label class="small-note">Choose Color</label>
-          <div class="bet-actions">
-            <button class="btn btn-green" id="greenBtn">Green</button>
-            <button class="btn btn-red" id="redBtn">Red</button>
-          </div>
-
-          <div style="margin-top:10px" id="betPanel" class="hidden">
-            <input id="betAmount" type="number" placeholder="Bet amount (eg. 100)">
-            <div style="margin-top:8px; display:flex; gap:8px">
-              <button class="btn" id="cancelBet" style="background:transparent; color:var(--accent); border:1px solid var(--glass-border);">Cancel</button>
-              <button class="btn btn-claim" id="placeBetBtn" style="flex:1">Place Bet</button>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <label class="small-note">Withdraw</label>
-          <select id="method">
-            <option value="">Select Method</option>
-            <option value="Bkash">Bkash</option>
-            <option value="Nagad">Nagad</option>
-          </select>
-          <input id="withdrawAmount" type="number" placeholder="Amount">
-          <input id="withdrawNumber" type="text" placeholder="Account number">
-          <div style="display:flex; gap:8px; margin-top:8px">
-            <button class="btn btn-withdraw" id="submitWithdrawBtn">Submit</button>
-          </div>
-          <div id="withdrawMsg" class="small-note" style="margin-top:8px"></div>
-
-          <div class="withdraw-list" id="withdrawList"></div>
-        </div>
-      </div>
-    </aside>
-
-    <!-- RIGHT MAIN -->
-    <main class="main">
-      <section class="panel">
-        <div class="game-top">
-          <div>
-            <div style="font-size:0.95rem; color:rgba(255,255,255,0.8)">Round status</div>
-            <div style="margin-top:6px; display:flex; gap:10px; align-items:center">
-              <div class="countdown" id="countdown">Ready</div>
-              <div class="small-note">Chance modifier applied after 3 losses</div>
-            </div>
-          </div>
-          <div class="status">
-            <div class="small-note">Selected: <strong id="selectedColor">—</strong></div>
-            <div class="small-note">Balance: <strong id="miniBal">0 tk</strong></div>
-          </div>
-        </div>
-
-        <div class="result-box">
-          <div class="result-msg" id="betResult">Make a bet to play</div>
-          <div id="resultBadgeArea"></div>
-        </div>
-      </section>
-
-      <section class="panel">
-        <div style="display:flex; justify-content:space-between; align-items:center">
-          <h3 style="margin:0">🎮 Game History</h3>
-          <div class="small-note">Latest <span id="historyCount">0</span></div>
-        </div>
-
-        <table class="history-table" aria-hidden="false">
-          <thead>
-            <tr>
-              <th>Play</th>
-              <th class="muted">Bet</th>
-              <th class="muted">Result</th>
-              <th class="muted">Net</th>
-            </tr>
-          </thead>
-          <tbody id="historyBody"></tbody>
-        </table>
-      </section>
-    </main>
+<div class="section bet-section">
+  <div>
+    <button class="btn-green" id="greenBtn">Green</button>
+    <button class="btn-red" id="redBtn">Red</button>
   </div>
+  <div id="betInputArea" class="hidden">
+    <div class="close-btn" onclick="closeBetInput()">×</div>
+    <input type="number" id="betAmount" placeholder="Enter bet amount">
+    <button id="placeBetBtn">Place Bet</button>
+  </div>
+  <div class="countdown" id="countdown"></div>
+  <div class="message" id="betResult"></div>
+</div>
+
+<button class="btn-withdraw" onclick="openWithdraw()">Withdraw</button>
+
+<div class="section withdraw-section hidden" id="withdrawSection">
+  <select id="method">
+    <option value="">Select Method</option>
+    <option value="Bkash">Bkash</option>
+    <option value="Nagad">Nagad</option>
+  </select>
+  <input type="number" id="withdrawAmount" placeholder="Enter amount">
+  <input type="text" id="withdrawNumber" placeholder="Enter account number">
+  <div class="withdraw-buttons">
+    <button id="submitWithdrawBtn">Submit</button>
+    <button id="backWithdrawBtn">Back</button>
+  </div>
+  <div class="message" id="withdrawMsg"></div>
+</div>
+
+<h2>🎮 Game History</h2>
+<div class="section" id="historySection">
+  <table>
+    <thead>
+      <tr>
+        <th>Color</th>
+        <th>Bet</th>
+        <th>Result</th>
+        <th>Net Total</th>
+      </tr>
+    </thead>
+    <tbody id="historyBody"></tbody>
+  </table>
+</div>
 
 <script>
-/* -------------- App State -------------- */
 let balance = parseFloat(localStorage.getItem('balance')) || 0;
 let gameHistory = JSON.parse(localStorage.getItem('gameHistory')) || [];
-let withdrawHistory = JSON.parse(localStorage.getItem('withdrawHistory') || '[]') || [];
 let selectedColor = null;
 let codeClaimedThisSession = false;
 let lossStreak = 0;
 
-/* -------------- Utilities -------------- */
-const el = id => document.getElementById(id);
-const fmt = v => parseFloat(v).toFixed(0);
-
-/* -------------- UI Init -------------- */
-function updateBalanceUI(){
-  el('balance').innerText = fmt(balance) + ' tk';
-  el('miniBal').innerText = fmt(balance) + ' tk';
-  el('balanceBubble').style.transform = 'translateY(0)';
-}
-function updateLossUI(){ el('lossStreak').innerText = lossStreak; }
-function updateHistoryCount(){ el('historyCount').innerText = gameHistory.length; }
-
-/* -------------- Render History -------------- */
-function renderHistory(){
-  const tbody = el('historyBody');
-  tbody.innerHTML = '';
-  // show latest first
-  const items = [...gameHistory].reverse();
-  items.forEach((e,i)=>{
-    const tr = document.createElement('tr');
-    // color dot
-    const dotClass = e.result === 'WIN' ? 'dot green' : 'dot red';
-    const net = parseFloat(e.netTotal);
-    const signNet = net > 0 ? `+${net}` : net;
-    const netClass = net > 0 ? 'net plus' : 'net minus';
-    tr.innerHTML = `
-      <td>
-        <div class="history-row">
-          <div class="col-left">
-            <div class="${dotClass}"></div>
-            <div>
-              <div><strong style="text-transform:capitalize">${e.color || '—'}</strong></div>
-              <div class="muted" style="margin-top:4px; font-size:0.82rem">${new Date(e.t||Date.now()).toLocaleString()}</div>
-            </div>
-          </div>
-        </div>
-      </td>
-      <td class="muted">${e.bet} tk</td>
-      <td><span class="badge ${e.result==='WIN' ? 'win' : 'loss'}">${e.result}</span></td>
-      <td><span class="${netClass}">${signNet} tk</span></td>
-    `;
-    tbody.appendChild(tr);
-  });
-  updateHistoryCount();
-}
-
-/* -------------- Withdraw UI -------------- */
-function renderWithdraws(){
-  const list = el('withdrawList');
-  list.innerHTML = '';
-  withdrawHistory.slice().reverse().forEach(w => {
-    const d = document.createElement('div');
-    d.className = 'withdraw-item';
-    d.innerHTML = `<div>${w.method} → ${w.number}</div><div class="muted">${w.amount} tk</div>`;
-    list.appendChild(d);
-  });
-}
-
-/* -------------- Game Logic -------------- */
-function chooseColor(color){
-  selectedColor = color;
-  el('selectedColor').innerText = color;
-  el('betPanel').classList.remove('hidden');
-  el('betResult').innerText = `Ready to bet on ${color}`;
-  el('resultBadgeArea').innerHTML = '';
-}
-
-function resetBetPanel(){
-  selectedColor = null;
-  el('selectedColor').innerText = '—';
-  el('betPanel').classList.add('hidden');
-  el('betAmount').value = '';
-}
-
-/* checkWin: returns boolean.
-   base chance 0.25, if lossStreak >=3 then 0.6 (as in your logic)
-*/
-function checkWin(){
-  let chance = 0.25;
-  if(lossStreak >= 3) chance = 0.6;
-  return Math.random() < chance;
-}
-
-/* placeBet: validates, updates balance, simulates countdown, stores history */
-function placeBet(){
-  const amount = parseFloat(el('betAmount').value);
-  const msgEl = el('betResult');
-  if(!selectedColor){ msgEl.innerText = 'Please choose a color first'; return; }
-  if(isNaN(amount) || amount <= 0){ msgEl.innerText = 'Enter a valid bet amount'; return; }
-  if(amount > balance){ msgEl.innerText = 'Not enough balance'; return; }
-
-  // lock UI
-  balance -= amount; // stake removed first
-  updateBalanceUI();
-
-  el('greenBtn').disabled = true;
-  el('redBtn').disabled = true;
-  el('countdown').innerText = '⏳ 5s';
-  let sec = 5;
-  const step = setInterval(()=>{
-    sec--;
-    el('countdown').innerText = '⏳ ' + sec + 's';
-    if(sec <= 0){
-      clearInterval(step);
-      const win = checkWin();
-      let netTotal = 0;
-      let resultText = '';
-      if(win){
-        // using your existing logic: netTotal = amount * 2 (bet + win when added back)
-        netTotal = amount * 2;
-        balance += netTotal; // add back stake + reward
-        resultText = 'WIN';
-        el('betResult').innerText = `🎉 WIN! ${fmt(netTotal)} tk`;
-        el('resultBadgeArea').innerHTML = `<div class="badge win">+${fmt(netTotal)} tk</div>`;
-        lossStreak = 0;
-      } else {
-        netTotal = -amount;
-        resultText = 'LOSS';
-        el('betResult').innerText = `💔 LOSS!`;
-        el('resultBadgeArea').innerHTML = `<div class="badge loss">-${fmt(Math.abs(netTotal))} tk</div>`;
-        lossStreak++;
-      }
-
-      // store history item (store timestamp)
-      const entry = { color: selectedColor, bet: amount, result: resultText, netTotal: netTotal.toFixed(0), t: Date.now() };
-      gameHistory.push(entry);
-      localStorage.setItem('gameHistory', JSON.stringify(gameHistory));
-
-      // persist balance and update UI
-      localStorage.setItem('balance', balance.toFixed(2));
-      updateBalanceUI();
-      updateLossUI();
-      renderHistory();
-
-      // unlock UI
-      el('countdown').innerText = 'Ready';
-      el('greenBtn').disabled = false;
-      el('redBtn').disabled = false;
-      resetBetPanel();
-    }
-  }, 1000);
-}
-
-/* Claim code (simple demo)
-   - single-use per session (as before)
-   - supports a couple of demo codes
-*/
-const validCodes = {
-  '10000': 100,
-  'WELCOME50': 50
-};
+function updateBalanceDisplay(){ document.getElementById('balance').innerText = balance.toFixed(0)+' tk'; }
+updateBalanceDisplay();
+renderHistory();
 
 function claimCode(){
-  const code = el('claimCode').value.trim();
-  const msg = el('claimMsg');
-  if(!code){ msg.innerText = 'Enter a code'; return; }
-  if(codeClaimedThisSession){ msg.innerText = 'Already claimed in this session'; return; }
-  if(validCodes[code]){
-    const amount = validCodes[code];
-    balance += amount;
-    codeClaimedThisSession = true;
-    localStorage.setItem('balance', balance.toFixed(2));
-    updateBalanceUI();
-    msg.innerText = `✅ ${amount} tk added`;
-  } else {
-    msg.innerText = 'Invalid code';
-  }
+  const code=document.getElementById('claimCode').value;
+  const msg=document.getElementById('claimMsg');
+  if(codeClaimedThisSession){ msg.className='message error'; msg.innerText='❌ Already claimed!'; return; }
+  if(code==='70817QWER'){ balance+=100; codeClaimedThisSession=true; msg.className='message success'; msg.innerText='✅ 100 tk added!'; localStorage.setItem('balance',balance.toFixed(2)); updateBalanceDisplay(); }
+  else{ msg.className='message error'; msg.innerText='❌ Wrong Code!'; }
 }
 
-/* Withdraw submit (demo only) */
+function chooseColor(color){ selectedColor=color; document.getElementById('betInputArea').classList.remove('hidden'); document.getElementById('betResult').innerText=''; document.getElementById('countdown').innerText=''; }
+function closeBetInput(){ document.getElementById('betInputArea').classList.add('hidden'); selectedColor=null; }
+
+function checkWin(){
+  let chance=0.25;
+  if(lossStreak>=3) chance=0.6;
+  const win=Math.random()<chance;
+  if(win) lossStreak=0; else lossStreak++;
+  return win;
+}
+
+function placeBet(){
+  const amount=parseFloat(document.getElementById('betAmount').value);
+  const msg=document.getElementById('betResult');
+  if(isNaN(amount)||amount<=0||amount>balance){ msg.className='message error'; msg.innerText='❌ Invalid bet!'; return; }
+
+  balance-=amount;
+  updateBalanceDisplay();
+  document.getElementById('betInputArea').classList.add('hidden');
+  document.getElementById('greenBtn').disabled=true;
+  document.getElementById('redBtn').disabled=true;
+
+  let countdown=5;
+  const countdownEl=document.getElementById('countdown');
+  countdownEl.innerText='⏳ '+countdown+'s';
+
+  const interval=setInterval(()=>{
+    countdown--;
+    countdownEl.innerText='⏳ '+countdown+'s';
+    if(countdown<=0){
+      clearInterval(interval);
+      const win=checkWin();
+      let netTotal=0, resultText='';
+
+      if(win){
+        netTotal = amount*2; // Bet + Win
+        balance += netTotal; // Add both to balance
+        resultText='WIN';
+        msg.className='message success';
+        msg.innerText=`🎉 WIN! ${netTotal.toFixed(0)} tk`;
+      } else{
+        netTotal = -amount;
+        resultText='LOSS';
+        msg.className='message error';
+        msg.innerText='💔 LOSS!';
+      }
+
+      updateBalanceDisplay();
+      countdownEl.innerText='';
+      document.getElementById('greenBtn').disabled=false;
+      document.getElementById('redBtn').disabled=false;
+
+      const entry={color:selectedColor, bet:amount, result:resultText, netTotal:netTotal.toFixed(0)};
+      gameHistory.push(entry);
+      localStorage.setItem('gameHistory',JSON.stringify(gameHistory));
+      localStorage.setItem('balance',balance.toFixed(2));
+      renderHistory();
+    }
+  },1000);
+}
+
+function renderHistory(){
+  const tbody=document.getElementById('historyBody');
+  tbody.innerHTML='';
+  gameHistory.forEach(e=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${e.color}</td><td>${e.bet} tk</td><td>${e.result}</td><td>${e.netTotal} tk</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function openWithdraw(){ document.querySelector('.claim-section').classList.add('hidden'); document.querySelector('.bet-section').classList.add('hidden'); document.querySelector('.btn-withdraw').classList.add('hidden'); document.getElementById('withdrawSection').classList.remove('hidden'); }
+function closeWithdraw(){ document.querySelector('.claim-section').classList.remove('hidden'); document.querySelector('.bet-section').classList.remove('hidden'); document.querySelector('.btn-withdraw').classList.remove('hidden'); document.getElementById('withdrawSection').classList.add('hidden'); }
 function submitWithdraw(){
-  const method = el('method').value;
-  const amount = parseFloat(el('withdrawAmount').value);
-  const number = el('withdrawNumber').value.trim();
-  const msg = el('withdrawMsg');
-
-  if(!method || isNaN(amount) || amount <= 0 || !number){
-    msg.innerText = 'All fields required';
-    return;
-  }
-  if(amount < 500){
-    msg.innerText = 'Minimum withdraw 500 tk';
-    return;
-  }
-  if(amount > balance){
-    msg.innerText = 'Not enough balance';
-    return;
-  }
-
-  // process (demo): subtract and add to withdraw history
-  balance -= amount;
-  const w = { method, amount: fmt(amount), number, t: Date.now() };
-  withdrawHistory.push(w);
-  localStorage.setItem('withdrawHistory', JSON.stringify(withdrawHistory));
-  localStorage.setItem('balance', balance.toFixed(2));
-  updateBalanceUI();
-  renderWithdraws();
-  msg.innerText = '✅ Withdraw request noted (demo)';
-  el('withdrawAmount').value = '';
-  el('withdrawNumber').value = '';
+  const method=document.getElementById('method').value;
+  const amount=parseFloat(document.getElementById('withdrawAmount').value);
+  const number=document.getElementById('withdrawNumber').value;
+  const msg=document.getElementById('withdrawMsg');
+  if(!method||!amount||!number){ msg.className='message error'; msg.innerText='❌ All fields required'; return; }
+  if(amount<500){ msg.className='message error'; msg.innerText='⚠ Minimum withdraw 500 tk'; return; }
+  if(amount>balance){ msg.className='message error'; msg.innerText='❌ Not enough balance'; return; }
+  balance-=amount;
+  updateBalanceDisplay();
+  msg.className='message success'; msg.innerText='✅ Withdraw request sent!';
+  localStorage.setItem('balance',balance.toFixed(2));
 }
 
-/* -------------- Event bindings -------------- */
-el('greenBtn').addEventListener('click', ()=> chooseColor('green'));
-el('redBtn').addEventListener('click', ()=> chooseColor('red'));
-el('placeBetBtn').addEventListener('click', placeBet);
-el('cancelBet').addEventListener('click', resetBetPanel);
-el('claimBtn').addEventListener('click', claimCode);
-el('submitWithdrawBtn').addEventListener('click', submitWithdraw);
-
-/* -------------- Init data on load -------------- */
-(function init(){
-  // ensure numeric types
-  balance = Number(balance) || 0;
-  lossStreak = 0;
-  updateBalanceUI();
-  updateLossUI();
-  renderHistory();
-  renderWithdraws();
-})();
+document.getElementById('greenBtn').addEventListener('click',()=>chooseColor('Green'));
+document.getElementById('redBtn').addEventListener('click',()=>chooseColor('Red'));
+document.getElementById('placeBetBtn').addEventListener('click',placeBet);
+document.getElementById('submitWithdrawBtn').addEventListener('click',submitWithdraw);
+document.getElementById('backWithdrawBtn').addEventListener('click',closeWithdraw);
 </script>
 </body>
 </html>
