@@ -3,22 +3,66 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>2X WIN - Corrected Balance</title>
+<title>2X WIN - Game</title>
 <style>
-body { margin:0; font-family:'Poppins',sans-serif; background:radial-gradient(circle at top,#0f0c29,#302b63,#24243e); color:#fff; display:flex; flex-direction:column; align-items:center; min-height:100vh; padding-bottom:40px;}
-h1{margin:20px 0; font-size:2.2rem; letter-spacing:2px; color:#ffec00; text-shadow:0 0 10px rgba(255,236,0,0.8);}
+body {
+  margin:0;
+  font-family:'Poppins',sans-serif;
+  background:radial-gradient(circle at top,#0f0c29,#302b63,#24243e);
+  color:#fff;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  min-height:100vh;
+  padding-bottom:40px;
+}
+h1{
+  margin:20px 0;
+  font-size:2.2rem;
+  letter-spacing:2px;
+  color:#ffec00;
+  text-shadow:0 0 10px rgba(255,236,0,0.8);
+}
 h2{margin-top:30px; color:#ffec00;}
-.balance-circle{width:140px; height:140px; border-radius:50%; background:linear-gradient(135deg,#ff416c,#ff4b2b); display:flex; align-items:center; justify-content:center; font-size:1.6rem; font-weight:bold; margin-bottom:25px; box-shadow:0 0 20px rgba(0,0,0,0.5); animation:pulse 2s infinite;}
-@keyframes pulse{0%,100%{box-shadow:0 0 15px #ff4b2b;} 50%{box-shadow:0 0 35px #ffec00;}}
-.section{width:90%; max-width:400px; background:rgba(255,255,255,0.05); padding:20px; border-radius:12px; margin:15px 0; box-shadow:0 0 15px rgba(0,0,0,0.3); display:flex; flex-direction:column; align-items:center; position:relative;}
-input,select,button{margin:10px 0; padding:12px; border-radius:8px; border:none; outline:none; font-size:1rem;}
-input,select{width:90%; max-width:250px; background:rgba(255,255,255,0.1); color:#fff;}
-button{cursor:pointer; font-weight:bold; transition:transform 0.2s, box-shadow 0.3s;}
+.balance-circle{
+  width:140px; height:140px; border-radius:50%;
+  background:linear-gradient(135deg,#ff416c,#ff4b2b);
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.6rem; font-weight:bold; margin-bottom:25px;
+  box-shadow:0 0 20px rgba(0,0,0,0.5); animation:pulse 2s infinite;
+}
+@keyframes pulse{
+  0%,100%{box-shadow:0 0 15px #ff4b2b;}
+  50%{box-shadow:0 0 35px #ffec00;}
+}
+.section{
+  width:90%; max-width:400px;
+  background:rgba(255,255,255,0.05);
+  padding:20px; border-radius:12px;
+  margin:15px 0;
+  box-shadow:0 0 15px rgba(0,0,0,0.3);
+  display:flex; flex-direction:column; align-items:center;
+  position:relative;
+}
+input,select,button{
+  margin:10px 0; padding:12px;
+  border-radius:8px; border:none; outline:none;
+  font-size:1rem;
+}
+input,select{
+  width:90%; max-width:250px;
+  background:rgba(255,255,255,0.1); color:#fff;
+}
+button{
+  cursor:pointer; font-weight:bold;
+  transition:transform 0.2s, box-shadow 0.3s;
+}
 button:hover{transform:scale(1.05); box-shadow:0 0 15px #ffec00;}
 .btn-green{background:linear-gradient(45deg,#00c853,#64dd17); color:#fff; width:120px;}
 .btn-red{background:linear-gradient(45deg,#d50000,#ff1744); color:#fff; width:120px;}
 .btn-claim{background:linear-gradient(45deg,#ffc107,#ffeb3b); color:#000; width:150px;}
 .btn-withdraw{background:linear-gradient(45deg,#1e88e5,#42a5f5); color:#fff; width:150px; margin-top:15px;}
+.btn-deposit{background:linear-gradient(45deg,#ff6f00,#ff8f00); color:#fff; width:150px; margin-top:10px;}
 .message{margin-top:5px; font-size:0.9rem; animation:fadeIn 0.5s; text-align:center;}
 .message.success{color:#00ffcc; font-size:1.1rem; animation:bounce 0.7s;}
 .message.error{color:#ff1744; font-size:1.1rem; animation:shake 0.7s;}
@@ -28,12 +72,24 @@ button:hover{transform:scale(1.05); box-shadow:0 0 15px #ffec00;}
 .hidden{display:none;}
 .countdown{font-size:1.5rem; margin-top:20px; animation:blink 1s infinite;}
 @keyframes blink{50%{opacity:0.6;}}
-.close-btn{position:absolute; top:10px; right:10px; background:#ff1744; color:#fff; width:30px; height:30px; border-radius:50%; line-height:30px; text-align:center; font-weight:bold; cursor:pointer;}
-.withdraw-buttons{display:flex; gap:10px; margin-top:10px;}
+.close-btn{
+  position:absolute; top:10px; right:10px;
+  background:#ff1744; color:#fff;
+  width:30px; height:30px; border-radius:50%;
+  line-height:30px; text-align:center;
+  font-weight:bold; cursor:pointer;
+}
+.withdraw-buttons,.deposit-buttons{
+  display:flex; gap:10px; margin-top:10px;
+}
 table{width:100%; border-collapse:collapse;}
 th,td{padding:5px; text-align:center; border-bottom:1px solid #fff;}
 #historySection{max-height:200px; overflow-y:auto; width:90%; max-width:500px;}
-@media(max-width:500px){h1{font-size:1.8rem;} .balance-circle{width:120px; height:120px; font-size:1.4rem;} button,input,select{font-size:0.95rem;}}
+@media(max-width:500px){
+  h1{font-size:1.8rem;}
+  .balance-circle{width:120px; height:120px; font-size:1.4rem;}
+  button,input,select{font-size:0.95rem;}
+}
 </style>
 </head>
 <body>
@@ -60,8 +116,11 @@ th,td{padding:5px; text-align:center; border-bottom:1px solid #fff;}
   <div class="message" id="betResult"></div>
 </div>
 
+<!-- Withdraw & Deposit buttons -->
 <button class="btn-withdraw" onclick="openWithdraw()">Withdraw</button>
+<button class="btn-deposit" onclick="openDeposit()">Deposit</button>
 
+<!-- Withdraw Section -->
 <div class="section withdraw-section hidden" id="withdrawSection">
   <select id="method">
     <option value="">Select Method</option>
@@ -75,6 +134,16 @@ th,td{padding:5px; text-align:center; border-bottom:1px solid #fff;}
     <button id="backWithdrawBtn">Back</button>
   </div>
   <div class="message" id="withdrawMsg"></div>
+</div>
+
+<!-- Deposit Section -->
+<div class="section deposit-section hidden" id="depositSection">
+  <h3>Contact for Deposit</h3>
+  <div class="deposit-buttons">
+    <button onclick="window.open('https://wa.me/8801842145643','_blank')">WhatsApp</button>
+    <button onclick="window.open('https://t.me/lxhridoy','_blank')">Telegram</button>
+  </div>
+  <button style="margin-top:15px;" onclick="closeDeposit()">Back</button>
 </div>
 
 <h2>🎮 Game History</h2>
@@ -95,7 +164,6 @@ let balance = parseFloat(localStorage.getItem('balance')) || 0;
 let gameHistory = JSON.parse(localStorage.getItem('gameHistory')) || [];
 let selectedColor = null;
 let codeClaimedThisSession = false;
-let lossStreak = 0;
 let round = gameHistory.length + 1;
 
 function updateBalanceDisplay(){ document.getElementById('balance').innerText = balance.toFixed(0)+' tk'; }
@@ -114,8 +182,7 @@ function chooseColor(color){ selectedColor=color; document.getElementById('betIn
 function closeBetInput(){ document.getElementById('betInputArea').classList.add('hidden'); selectedColor=null; }
 
 function checkWin(){
-  let chance=0.5; // 50-50 chance
-  return Math.random()<chance ? "Green" : "Red";
+  return Math.random()<0.5 ? "Green" : "Red";
 }
 
 function placeBet(){
@@ -142,7 +209,6 @@ function placeBet(){
       msg.className='message success';
       msg.innerText=`🎉 Result: ${resultColor}`;
 
-      // যদি ইউজার ঠিক রঙ বেছে নেয় তবে জিতবে
       if(selectedColor===resultColor){
         balance+=amount*2;
         msg.innerText+=` ✅ You WIN ${amount*2} tk`;
@@ -155,7 +221,6 @@ function placeBet(){
       document.getElementById('greenBtn').disabled=false;
       document.getElementById('redBtn').disabled=false;
 
-      // শুধু গেম রেজাল্ট হিস্টরিতে যোগ হবে
       const entry={round:round, result:resultColor};
       round++;
       gameHistory.push(entry);
@@ -176,8 +241,20 @@ function renderHistory(){
   });
 }
 
-function openWithdraw(){ document.querySelector('.claim-section').classList.add('hidden'); document.querySelector('.bet-section').classList.add('hidden'); document.querySelector('.btn-withdraw').classList.add('hidden'); document.getElementById('withdrawSection').classList.remove('hidden'); }
-function closeWithdraw(){ document.querySelector('.claim-section').classList.remove('hidden'); document.querySelector('.bet-section').classList.remove('hidden'); document.querySelector('.btn-withdraw').classList.remove('hidden'); document.getElementById('withdrawSection').classList.add('hidden'); }
+function openWithdraw(){
+  document.querySelector('.claim-section').classList.add('hidden');
+  document.querySelector('.bet-section').classList.add('hidden');
+  document.querySelector('.btn-withdraw').classList.add('hidden');
+  document.querySelector('.btn-deposit').classList.add('hidden');
+  document.getElementById('withdrawSection').classList.remove('hidden');
+}
+function closeWithdraw(){
+  document.querySelector('.claim-section').classList.remove('hidden');
+  document.querySelector('.bet-section').classList.remove('hidden');
+  document.querySelector('.btn-withdraw').classList.remove('hidden');
+  document.querySelector('.btn-deposit').classList.remove('hidden');
+  document.getElementById('withdrawSection').classList.add('hidden');
+}
 function submitWithdraw(){
   const method=document.getElementById('method').value;
   const amount=parseFloat(document.getElementById('withdrawAmount').value);
@@ -190,6 +267,22 @@ function submitWithdraw(){
   updateBalanceDisplay();
   msg.className='message success'; msg.innerText='✅ Withdraw request sent!';
   localStorage.setItem('balance',balance.toFixed(2));
+}
+
+// Deposit open/close
+function openDeposit(){
+  document.querySelector('.claim-section').classList.add('hidden');
+  document.querySelector('.bet-section').classList.add('hidden');
+  document.querySelector('.btn-withdraw').classList.add('hidden');
+  document.querySelector('.btn-deposit').classList.add('hidden');
+  document.getElementById('depositSection').classList.remove('hidden');
+}
+function closeDeposit(){
+  document.querySelector('.claim-section').classList.remove('hidden');
+  document.querySelector('.bet-section').classList.remove('hidden');
+  document.querySelector('.btn-withdraw').classList.remove('hidden');
+  document.querySelector('.btn-deposit').classList.remove('hidden');
+  document.getElementById('depositSection').classList.add('hidden');
 }
 
 document.getElementById('greenBtn').addEventListener('click',()=>chooseColor('Green'));
