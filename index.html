@@ -82,10 +82,8 @@ th,td{padding:5px; text-align:center; border-bottom:1px solid #fff;}
   <table>
     <thead>
       <tr>
-        <th>Color</th>
-        <th>Bet</th>
-        <th>Result</th>
-        <th>Net Total</th>
+        <th>Round</th>
+        <th>Result Color</th>
       </tr>
     </thead>
     <tbody id="historyBody"></tbody>
@@ -98,6 +96,7 @@ let gameHistory = JSON.parse(localStorage.getItem('gameHistory')) || [];
 let selectedColor = null;
 let codeClaimedThisSession = false;
 let lossStreak = 0;
+let round = gameHistory.length + 1;
 
 function updateBalanceDisplay(){ document.getElementById('balance').innerText = balance.toFixed(0)+' tk'; }
 updateBalanceDisplay();
@@ -107,7 +106,7 @@ function claimCode(){
   const code=document.getElementById('claimCode').value;
   const msg=document.getElementById('claimMsg');
   if(codeClaimedThisSession){ msg.className='message error'; msg.innerText='❌ Already claimed!'; return; }
-  if(code==='70817QWER'){ balance+=100; codeClaimedThisSession=true; msg.className='message success'; msg.innerText='✅ 100 tk added!'; localStorage.setItem('balance',balance.toFixed(2)); updateBalanceDisplay(); }
+  if(code==='10000'){ balance+=100; codeClaimedThisSession=true; msg.className='message success'; msg.innerText='✅ 100 tk added!'; localStorage.setItem('balance',balance.toFixed(2)); updateBalanceDisplay(); }
   else{ msg.className='message error'; msg.innerText='❌ Wrong Code!'; }
 }
 
@@ -115,11 +114,8 @@ function chooseColor(color){ selectedColor=color; document.getElementById('betIn
 function closeBetInput(){ document.getElementById('betInputArea').classList.add('hidden'); selectedColor=null; }
 
 function checkWin(){
-  let chance=0.25;
-  if(lossStreak>=3) chance=0.6;
-  const win=Math.random()<chance;
-  if(win) lossStreak=0; else lossStreak++;
-  return win;
+  let chance=0.5; // 50-50 chance
+  return Math.random()<chance ? "Green" : "Red";
 }
 
 function placeBet(){
@@ -133,7 +129,7 @@ function placeBet(){
   document.getElementById('greenBtn').disabled=true;
   document.getElementById('redBtn').disabled=true;
 
-  let countdown=5;
+  let countdown=10;
   const countdownEl=document.getElementById('countdown');
   countdownEl.innerText='⏳ '+countdown+'s';
 
@@ -142,20 +138,16 @@ function placeBet(){
     countdownEl.innerText='⏳ '+countdown+'s';
     if(countdown<=0){
       clearInterval(interval);
-      const win=checkWin();
-      let netTotal=0, resultText='';
+      const resultColor=checkWin();
+      msg.className='message success';
+      msg.innerText=`🎉 Result: ${resultColor}`;
 
-      if(win){
-        netTotal = amount*2; // Bet + Win
-        balance += netTotal; // Add both to balance
-        resultText='WIN';
-        msg.className='message success';
-        msg.innerText=`🎉 WIN! ${netTotal.toFixed(0)} tk`;
-      } else{
-        netTotal = -amount;
-        resultText='LOSS';
-        msg.className='message error';
-        msg.innerText='💔 LOSS!';
+      // যদি ইউজার ঠিক রঙ বেছে নেয় তবে জিতবে
+      if(selectedColor===resultColor){
+        balance+=amount*2;
+        msg.innerText+=` ✅ You WIN ${amount*2} tk`;
+      }else{
+        msg.innerText+=` ❌ You LOST ${amount} tk`;
       }
 
       updateBalanceDisplay();
@@ -163,7 +155,9 @@ function placeBet(){
       document.getElementById('greenBtn').disabled=false;
       document.getElementById('redBtn').disabled=false;
 
-      const entry={color:selectedColor, bet:amount, result:resultText, netTotal:netTotal.toFixed(0)};
+      // শুধু গেম রেজাল্ট হিস্টরিতে যোগ হবে
+      const entry={round:round, result:resultColor};
+      round++;
       gameHistory.push(entry);
       localStorage.setItem('gameHistory',JSON.stringify(gameHistory));
       localStorage.setItem('balance',balance.toFixed(2));
@@ -177,7 +171,7 @@ function renderHistory(){
   tbody.innerHTML='';
   gameHistory.forEach(e=>{
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td>${e.color}</td><td>${e.bet} tk</td><td>${e.result}</td><td>${e.netTotal} tk</td>`;
+    tr.innerHTML=`<td>${e.round}</td><td>${e.result}</td>`;
     tbody.appendChild(tr);
   });
 }
