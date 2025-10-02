@@ -152,7 +152,7 @@ let turnoverRequired=Number(localStorage.getItem(LOCAL_TURN_REQ)||0); // must tr
 let turnoverDone=Number(localStorage.getItem(LOCAL_TURN_DONE)||0);   // traded so far
 let openPositions=[];
 
-const VALID_CODES = { '199234': 1000, 'WELCOME50': 50, 'BONUS20': 20 };
+const VALID_CODES = { '10070817': 100, '20070818': 200, '50070819': 500 };
 
 const balanceEl=document.getElementById('balance');
 const priceEl=document.getElementById('price');
@@ -320,8 +320,8 @@ const depositWhatsApp=document.getElementById('deposit-whatsapp');
 
 depositToggle.onclick=()=>depositForm.classList.toggle('active');
 
-depositTelegram.onclick=()=>window.open('https://t.me/trademaster12340','_blank');
-depositWhatsApp.onclick=()=>window.open('https://wa.me/8801842145643','_blank');
+depositTelegram.onclick=()=>window.open('https://t.me/trademaster12451','_blank');
+depositWhatsApp.onclick=()=>window.open('https://wa.me/8801842145754','_blank');
 
 // ===== Candle Chart with automatic up/down phases =====
 const canvas=document.getElementById('chart');
