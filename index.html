@@ -13,8 +13,18 @@
 body{margin:0;background:linear-gradient(180deg,#031027,#071426);color:#e8f0fb;position:relative}
 .wrap{max-width:980px;margin:auto;padding:16px}
 header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
-.logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:800}
-h1{margin:0;font-size:18px}
+.logo{display:none;} /* লোগো হাইড */
+h1{margin:0;font-size:18px;position:relative;overflow:hidden;}
+@keyframes text-slide {
+  0% {transform: translateY(100%); opacity:0;}
+  50% {transform: translateY(0); opacity:1;}
+  100% {transform: translateY(-100%); opacity:0;}
+}
+.animated-title{
+  font-size:24px; font-weight:800; color:var(--accent);
+  display:inline-block;
+  animation:text-slide 3s infinite;
+}
 .grid{display:grid;grid-template-columns:1fr 360px;gap:14px}
 .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:12px;border-radius:12px;position:relative}
 canvas{width:100%;height:300px;border-radius:10px;display:block;background:#041026}
@@ -37,16 +47,17 @@ button{flex:1;padding:12px;border-radius:10px;border:0;font-weight:800;cursor:po
 .trade.win{background:rgba(22,163,74,0.05)}
 .trade.lose{background:rgba(239,68,68,0.05)}
 .small{font-size:12px;color:var(--muted)}
-.withdraw-form{display:none;flex-direction:column;gap:10px;margin-top:10px;background:rgba(255,255,255,0.02);padding:10px;border-radius:10px}
-.withdraw-form.active{display:flex;}
+.withdraw-form, .deposit-form{display:none;flex-direction:column;gap:10px;margin-top:10px;background:rgba(255,255,255,0.02);padding:10px;border-radius:10px}
+.withdraw-form.active, .deposit-form.active{display:flex;}
+.deposit-options{display:flex;gap:8px;margin-top:6px}
+.deposit-options button{flex:1;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--muted);cursor:pointer;}
 @media(max-width:940px){.grid{grid-template-columns:1fr} canvas{height:240px}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <div class="logo">TRADE</div>
-    <h1>Up / Down Trading</h1>
+    <div class="animated-title">Trading Master</div>
   </header>
   <div class="grid">
     <div class="card">
@@ -94,17 +105,27 @@ button{flex:1;padding:12px;border-radius:10px;border:0;font-weight:800;cursor:po
         <div id="claim-msg" class="small" style="margin-top:6px"></div>
       </div>
 
-      <div style="margin-top:10px">
+      <div style="margin-top:10px; display:flex; gap:8px;">
         <button id="withdraw-toggle" class="btn-ghost">Withdraw</button>
-        <div id="withdraw-form" class="withdraw-form">
-          <label>Method</label>
-          <select id="withdraw-method"><option value="bKash">বিকাশ</option><option value="nagad">নগদ</option></select>
-          <label>Amount (≥500)</label>
-          <input id="withdraw-amount" type="number" min="500" />
-          <label>Account Number</label>
-          <input id="withdraw-account" type="text" />
-          <button id="withdraw-submit" class="btn-ghost">Submit Withdraw</button>
-          <div id="withdraw-msg" class="small"></div>
+        <button id="deposit-toggle" class="btn-ghost">Deposit</button>
+      </div>
+      
+      <div id="withdraw-form" class="withdraw-form">
+        <label>Method</label>
+        <select id="withdraw-method"><option value="bKash">বিকাশ</option><option value="nagad">নগদ</option></select>
+        <label>Amount (≥500)</label>
+        <input id="withdraw-amount" type="number" min="500" />
+        <label>Account Number</label>
+        <input id="withdraw-account" type="text" />
+        <button id="withdraw-submit" class="btn-ghost">Submit Withdraw</button>
+        <div id="withdraw-msg" class="small"></div>
+      </div>
+
+      <div id="deposit-form" class="deposit-form">
+        <div class="small">Choose Deposit Method</div>
+        <div class="deposit-options">
+          <button id="deposit-telegram">Telegram</button>
+          <button id="deposit-whatsapp">WhatsApp</button>
         </div>
       </div>
 
@@ -266,51 +287,129 @@ withdrawSubmit.onclick=()=>{
   });
 };
 
-// ===== Price Chart + UP/DOWN Candle =====
+// ===== Deposit =====
+const depositToggle=document.getElementById('deposit-toggle');
+const depositForm=document.getElementById('deposit-form');
+const depositTelegram=document.getElementById('deposit-telegram');
+const depositWhatsApp=document.getElementById('deposit-whatsapp');
+
+depositToggle.onclick=()=>depositForm.classList.toggle('active');
+
+depositTelegram.onclick=()=>window.open('https://t.me/trademaster12340','_blank');
+depositWhatsApp.onclick=()=>window.open('https://wa.me/8801842145643','_blank');
+
+// ===== Candle Chart (replaced line chart with up/down candles) =====
 const canvas=document.getElementById('chart');
 const ctx=canvas.getContext('2d');let DPR=window.devicePixelRatio||1;
 function resize(){canvas.width=canvas.clientWidth*DPR;canvas.height=canvas.clientHeight*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);}
 window.onresize=resize;resize();
 
-let price=1000;
-let prices=[{x:0,y:price}];
-let t=0;
+let price=1000; // current price (used by trades)
+let candles=[]; // {open,close,high,low}
+const MAX_CANDLES = 100;
+let candleWidth = 8; // pixels per candle (on canvas CSS pixels)
 
-function step(){
-  const old = price;
-  price += (Math.random()*3 + 1) * (Math.random()<0.5 ? -1 : 1); // UP/DOWN
-
-  if(price<1) price=1;
-  prices.push({x:t++,y:price});
-  if(prices.length>200) prices.shift();
-
-  if(price>old) trendEl.textContent='UP ▲', trendEl.style.color='#16a34a';
-  else if(price<old) trendEl.textContent='DOWN ▼', trendEl.style.color='#ef4444';
-  else trendEl.textContent='—', trendEl.style.color='#98a6b8';
+function generateCandle(){
+  // create a new candle based on current price
+  const open = price;
+  // random close delta -3 .. +3
+  const delta = (Math.random() * 6) - 3;
+  let close = open + delta;
+  if(close < 1) close = 1;
+  // random wiggle for high/low
+  const high = Math.max(open, close) + Math.random() * 2;
+  const low = Math.min(open, close) - Math.random() * 2;
+  const candle = { open, close, high, low, time: Date.now() };
+  candles.push(candle);
+  price = close; // update global price
+  if(candles.length > MAX_CANDLES) candles.shift();
 }
 
-function draw(){
-  const W=canvas.clientWidth,H=canvas.clientHeight;
-  ctx.clearRect(0,0,W,H);
-  const minY=Math.min(...prices.map(p=>p.y)), maxY=Math.max(...prices.map(p=>p.y));
-  ctx.beginPath();
-  prices.forEach((p,i)=>{
-    const x=i/(prices.length-1)*W;
-    const y=H-(p.y-minY)/(maxY-minY)*H;
-    if(i==0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
-  });
-  ctx.strokeStyle='#06b6d4'; ctx.lineWidth=2; ctx.stroke();
+function drawCandle(c, x, w, H, min, max){
+  const scale = (H - 10) / (max - min || 1);
+  const openY = H - (c.open - min) * scale;
+  const closeY = H - (c.close - min) * scale;
+  const highY = H - (c.high - min) * scale;
+  const lowY = H - (c.low - min) * scale;
 
-  priceEl.textContent='৳'+price.toFixed(2);
-  if(prices.length>2){
-    const change=((prices.at(-1).y-prices[0].y)/prices[0].y*100).toFixed(2);
-    changeEl.textContent=(change>=0?'+':'')+change+'%';
+  const isUp = c.close >= c.open;
+  const color = isUp ? '#16a34a' : '#ef4444';
+
+  // Wick
+  ctx.beginPath();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = Math.max(1, DPR * 0.6);
+  ctx.moveTo(x + w/2, highY);
+  ctx.lineTo(x + w/2, lowY);
+  ctx.stroke();
+
+  // Body
+  const bodyTop = Math.min(openY, closeY);
+  const bodyHeight = Math.max(1, Math.abs(closeY - openY));
+  ctx.fillStyle = color;
+  ctx.fillRect(x, bodyTop, w, bodyHeight);
+}
+
+function drawChart(){
+  // clear (use CSS size to draw)
+  const W = canvas.clientWidth;
+  const H = canvas.clientHeight;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  if(candles.length === 0){
+    priceEl.textContent = '৳' + price.toFixed(2);
+    changeEl.textContent = '—';
+    trendEl.textContent = '—';
+    return;
+  }
+
+  // compute min/max across visible candles
+  const min = Math.min(...candles.map(c=>c.low));
+  const max = Math.max(...candles.map(c=>c.high));
+
+  // adapt candle width to available space if needed
+  const availWidth = W;
+  const desiredWidth = Math.floor(availWidth / candles.length);
+  const drawWidth = Math.max(3, Math.min(candleWidth, desiredWidth));
+  const gap = 2;
+
+  // draw candles left-to-right
+  candles.forEach((c, i) => {
+    const x = i * (drawWidth + gap) + 6; // small left padding
+    drawCandle(c, x, drawWidth, H, min, max);
+  });
+
+  // update price/change/trend UI
+  priceEl.textContent = '৳' + price.toFixed(2);
+  if(candles.length > 1){
+    const first = candles[0].open;
+    const last = candles[candles.length-1].close;
+    const changePerc = ((last - first) / first * 100).toFixed(2);
+    changeEl.textContent = (changePerc >= 0 ? '+' : '') + changePerc + '%';
+    const prevClose = candles[candles.length-2].close;
+    if(last > prevClose){
+      trendEl.textContent = 'UP ▲'; trendEl.style.color = '#16a34a';
+    } else if (last < prevClose){
+      trendEl.textContent = 'DOWN ▼'; trendEl.style.color = '#ef4444';
+    } else {
+      trendEl.textContent = '—'; trendEl.style.color = '#98a6b8';
+    }
   }
 }
 
-setInterval(()=>{step(); draw();},500);
+// run generation + draw periodically (keeps original rhythm)
+setInterval(()=>{
+  generateCandle();
+  drawChart();
+}, 500);
 
+// initial fill so chart isn't empty
+for(let i=0;i<20;i++){ generateCandle(); }
+drawChart();
+
+// ensure UI updated
 updateUI();
 </script>
 </body>
 </html>
+
